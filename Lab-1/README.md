@@ -1,5 +1,5 @@
-## Kill a Port Number (ex: Port 9999)
-    sudo kill -9 `sudo lsof -t -i:9999`
+## Kill a Port Number (ex: Port 6789)
+    sudo kill -9 `sudo lsof -t -i:6789`
 
 ## Lab Assignment 1 Questions
 
