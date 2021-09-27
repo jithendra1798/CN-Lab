@@ -1,7 +1,7 @@
 ## Kill a Port Number (ex: Port 9999)
     sudo kill -9 `sudo lsof -t -i:9999`
 
-Lab Assignment I
+## Lab Assignment 1 Questions
 
 1) Create a TCP/IP client-server program in which a single client connects to the server. The server then should send a greeting to the client. Repeat the experiment using UDP.
 2) Create a TCP/IP client-server program. The client should send a message asking for the current date. The server should respond with the current date that will be displayed on the client.
