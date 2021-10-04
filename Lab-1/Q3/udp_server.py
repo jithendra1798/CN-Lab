@@ -1,13 +1,11 @@
 import socket
-
-port = 6789
-
-# Create UDP socket
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-# Binding server
-s.bind(("localhost", port))
-print "waiting on port:", port
-while 1:
-	data, addr = s.recvfrom(1024)
-	print data
-
+server_socket=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+server_socket.bind(('localhost',9997))
+while True:
+    d=server_socket.recvfrom(1024)
+    data=d[0]
+    addr=d[1]
+    print("Client >>",str(data.decode()))
+    reply=input('Enter message : ')
+    server_socket.sendto(reply.encode(),addr)
+server_socket.close()
