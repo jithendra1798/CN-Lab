@@ -1,38 +1,27 @@
 import socket
 import threading
 
-c = socket.socket(socket.AF_INET , socket.SOCK_DGRAM )
-host = "localhost"
-port = 6789
-server = (host,port)
+serverName = 'localhost'
+serverPort = 12000
+clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+clientSocket.connect((serverName, serverPort))
 
-message = "Hi Server"
-c.sendto(message.encode("utf-8"),server)
-data, addr = c.recvfrom(1024)
-print(data.decode(),end="")
-
-name = input()
-message = name.encode('utf-8')
-c.sendto(message,server)
-
-def send():
+def receiveMessage():
     while True:
-        message = input()
-        if message == "quit":
-            c.close()
+        try:
+            msgFromServer, serverAddress = clientSocket.recvfrom(2048)
+            print(msgFromServer.decode())
+        except:
+            clientSocket.close()
             break
-        c.sendto(f"{name} >> {message}".encode("utf-8"), (host,port))
-def rec():
+
+def sendMessage():
     while True:
-        data, address = c.recvfrom(1024)
-        if str(data.decode())=='quit':
-            c.close()
-            break
-        print(data.decode())
+        msgForServer = input()
+        clientSocket.sendto(msgForServer.encode(), (serverName, serverPort))
 
+receiveMessageThread = threading.Thread(target=receiveMessage)
+receiveMessageThread.start()
 
-x1 = threading.Thread(target = send)
-x2 = threading.Thread(target = rec)
-
-x1.start()
-x2.start()
+sendMessageThread = threading.Thread(target=sendMessage)
+sendMessageThread.start()

@@ -1,45 +1,31 @@
 import socket
 import threading
 
-s = socket.socket(socket.AF_INET , socket.SOCK_DGRAM )
-host = "localhost"
-port = 6789
-server = (host, port)
-s.bind(server)
+serverPort = 12000
+serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+serverSocket.bind(('', serverPort))
+clientAddresses = []
 
-print("Server is running....")
+def sendToAllClients(message, senderClientAddress):
+    for clientAddress in clientAddresses:
+        if str(clientAddress) != str(senderClientAddress):
+            serverSocket.sendto(message, clientAddress)
 
-def new_client(data, address):
-    print(data.decode())
-    #\nType 'quit' to exit.
-    message = f"Enter name : ".encode('utf-8')
-    s.sendto(message,address)
-    data, address = s.recvfrom(1024)
-    name = str(data.decode())
-    print(name,"started messaging")
-
-def send():
+def receiveMsgFromClient():
     while True:
-        message = ("Server >> "+input()).encode("utf-8")
-        s.sendto(message,address)
-
-def rec(x1):
-    while True:
-        data, address = s.recvfrom(1024)
-        if data.decode()=="Hi Server":
-            name = new_client(data, address)
-        elif str(data.decode())=='quit':
-            s.close()
-            x1.kill()
-            quit()
+        msgFromClient, clientAddress = serverSocket.recvfrom(2048)
+        if clientAddress not in clientAddresses:
+            print(str(clientAddress), 'sent first message. Address saved.')
+            clientAddresses.append(clientAddress)
+            msgForAll = (str(clientAddress) + ' entered the chatroom.')
+            for address in clientAddresses:
+                if str(address) != str(clientAddress):
+                    serverSocket.sendto(msgForAll.encode(), address)
         else:
-            print(data.decode())
+            msgForAll = str(clientAddress) + ': ' + msgFromClient.decode()
+            for address in clientAddresses:
+                if str(address) != str(clientAddress):
+                    serverSocket.sendto(msgForAll.encode(), address)
 
-data, address = s.recvfrom(1024)
-name = new_client(data, address)
-
-x1 = threading.Thread( target = send )
-x2 = threading.Thread( target = rec, args=(x1,))
-
-x1.start()
-x2.start()
+print('Server is ready to welcome clients.')
+receiveMsgFromClient()
