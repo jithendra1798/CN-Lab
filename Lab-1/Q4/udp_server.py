@@ -1,7 +1,7 @@
 import socket
 import threading
 
-serverPort = 12000
+serverPort = 6789
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 serverSocket.bind(('', serverPort))
 clientAddresses = []
